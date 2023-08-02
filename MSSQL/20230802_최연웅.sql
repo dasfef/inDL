@@ -74,12 +74,15 @@ select * from GAM_NLS_USER
 declare @DAYOFF int
 select @DAYOFF = OCCURED_COUNT+ADDED_COUNT+CARRIED_COUNT+ADJUST_COUNT+INTERIM_ENTRY_LEAVE from WORKIN_LEAVE
 
-select *
-	from(select USER_NAME, @DAYOFF as 'ÃÑÈÞ°¡¼ö', USED_COUNT as '»ç¿ëÈÞ°¡¼ö', (@DAYOFF - USED_COUNT) as '³²ÀºÈÞ°¡¼ö' 
+select USER_NAME, ACCOUNT_YEAR, [¼³¸í], [LEAVE_COUNT]
+	from(select USER_NAME, ACCOUNT_YEAR,
+				convert(nvarchar(10),@DAYOFF) as 'ÃÑÈÞ°¡¼ö', 
+				convert(nvarchar(10),convert(numeric(18,2),USED_COUNT)) as '»ç¿ëÈÞ°¡¼ö', 
+				convert(nvarchar(10),convert(numeric(18,2),(@DAYOFF - USED_COUNT))) as '³²ÀºÈÞ°¡¼ö' 
 				from WORKIN_LEAVE A inner join GAM_NLS_USER B
 				on A.USER_ID = B.USER_ID 
 				where LCID = 1042 and ACCOUNT_YEAR = 2022) as A
-	unpivot(['¼³¸í'] for LEAVE_COUNT in([ÃÑÈÞ°¡¼ö], [»ç¿ëÈÞ°¡¼ö], [³²ÀºÈÞ°¡¼ö])) as unpvt
+	unpivot(LEAVE_COUNT for ¼³¸í in([ÃÑÈÞ°¡¼ö], [»ç¿ëÈÞ°¡¼ö], [³²ÀºÈÞ°¡¼ö])) as unpvt
 
 declare @DAYOFF int
 select @DAYOFF = OCCURED_COUNT+ADDED_COUNT+CARRIED_COUNT+ADJUST_COUNT+INTERIM_ENTRY_LEAVE from WORKIN_LEAVE
