@@ -55,7 +55,6 @@ select
 
 
 /* °úÁ¦3: Á¶°Çº° INSERT, DELETE */
-select * from CUSTOMER
 if not exists(select ID from CUSTOMER where ID = 'E258')
 	begin
 		insert into CUSTOMER values('E258', 'aiefjwe', 'µð¿¤5', '010-0000-9999')
@@ -64,6 +63,7 @@ else
 	begin
 		delete from CUSTOMER where ID = 'E258'
 	end
+select * from CUSTOMER
 
 
 /* °úÁ¦4: »ç¿ëÀÚº° ÃÑÈÞ°¡¼ö, »ç¿ëÈÞ°¡¼ö, ³²ÀºÈÞ°¡¼ö */
@@ -71,19 +71,18 @@ use SAMPLE
 select * from WORKIN_LEAVE
 select * from GAM_NLS_USER
 
-declare @DAYOFF int
-select @DAYOFF = OCCURED_COUNT+ADDED_COUNT+CARRIED_COUNT+ADJUST_COUNT+INTERIM_ENTRY_LEAVE from WORKIN_LEAVE
-
-select USER_NAME, ACCOUNT_YEAR, [¼³¸í], [LEAVE_COUNT]
-	from(select USER_NAME, ACCOUNT_YEAR,
-				convert(nvarchar(10),@DAYOFF) as 'ÃÑÈÞ°¡¼ö', 
-				convert(nvarchar(10),convert(numeric(18,2),USED_COUNT)) as '»ç¿ëÈÞ°¡¼ö', 
-				convert(nvarchar(10),convert(numeric(18,2),(@DAYOFF - USED_COUNT))) as '³²ÀºÈÞ°¡¼ö' 
+select USER_NAME, ACCOUNT_YEAR, ¼³¸í, LEAVE_COUNT
+	from(select USER_NAME, ACCOUNT_YEAR, 
+				convert(nvarchar(10), convert(numeric(18,2), (OCCURED_COUNT+ADDED_COUNT+CARRIED_COUNT+ADJUST_COUNT+INTERIM_ENTRY_LEAVE))) as 'ÃÑÈÞ°¡¼ö', 
+				convert(nvarchar(10), convert(numeric(18,2),USED_COUNT)) as '»ç¿ëÈÞ°¡¼ö', 
+				convert(nvarchar(10), convert(numeric(18,2),((OCCURED_COUNT+ADDED_COUNT+CARRIED_COUNT+ADJUST_COUNT+INTERIM_ENTRY_LEAVE) - USED_COUNT))) as '³²ÀºÈÞ°¡¼ö' 
 				from WORKIN_LEAVE A inner join GAM_NLS_USER B
 				on A.USER_ID = B.USER_ID 
-				where LCID = 1042 and ACCOUNT_YEAR = 2022) as A
-	unpivot(LEAVE_COUNT for ¼³¸í in([ÃÑÈÞ°¡¼ö], [»ç¿ëÈÞ°¡¼ö], [³²ÀºÈÞ°¡¼ö])) as unpvt
+				where LCID = 1042 and ACCOUNT_YEAR = 2022) as X
+	unpivot(LEAVE_COUNT for ¼³¸í in ([ÃÑÈÞ°¡¼ö], [»ç¿ëÈÞ°¡¼ö], [³²ÀºÈÞ°¡¼ö])) as unpvt
 
+
+/*
 declare @DAYOFF int
 select @DAYOFF = OCCURED_COUNT+ADDED_COUNT+CARRIED_COUNT+ADJUST_COUNT+INTERIM_ENTRY_LEAVE from WORKIN_LEAVE
 select 
@@ -91,3 +90,4 @@ select
 	from WORKIN_LEAVE A inner join GAM_NLS_USER B
 	on A.USER_ID = B.USER_ID 
 	where LCID = 1042 and ACCOUNT_YEAR = 2022
+	*/

@@ -31,14 +31,20 @@ select * from sales
 declare @price int
 
 /* 0~100: LOW, 100~500: MIDDLE, 500: HIGH */
-select *
-	case  
-		when price between 0 and 100 then 'LOW',
-		when price between 100 and 500 then 'MIDDLE',
-		when price >= 500 then 'HIGH'
-	as 'PRICE_TYPE'
-	from sales
+select *,
+	case
+		when price >= 0 and price <= 100 then 'LOW'
+		when price between 100 and 500 then 'MIDDLE'
+		else 'HIGH' end as 'PRICE_TYPE'
+	from sales;
 
+select PRICE 
+	case price(
+		when between 0 and 100 then 'LOW'
+		when between 100 and 500 then 'MIDDLE'
+		else 'HIGH' 
+		) as 'PRICE_TYPE'
+	from sales
 
 
 if (select count(*) from sales where TYPE='¹ÝÆÈ') >= 5
