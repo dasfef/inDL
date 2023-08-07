@@ -13,13 +13,13 @@ begin
 		set @X = @X + 1
 	end
 	set @cnt = @cnt + 1
-end
+end;
 
 
 /* 과제2: 삽입, 조회, 삭제, 수정 프로시저 작성 */
-use TEST
-select * from CUSTOMER
-
+use TEST;
+GO
+-- select * from CUSTOMER;
 create procedure crudData
 	@CRUD nvarchar(2)
 as
@@ -38,18 +38,18 @@ as
 	else				-- @CRUD가 D일때
 		begin
 			delete from CUSTOMER where ID='E258'
-		end
+		end;
 
-exec crudData 'C'
-exec crudData 'R'
-exec crudData 'U'
-exec crudData 'D'
-
+exec crudData 'C';
+exec crudData 'R';
+exec crudData 'U';
+exec crudData 'D';
+GO
 
 /* 과제3: 프로시저 작성 */
 select * from CUSTOMER
 select * from ITEM
-
+GO
 create procedure SQL_TEST
 	@TYPE nvarchar(2)			-- 프로시저 매개변수 선언
 	as
@@ -84,21 +84,21 @@ exec SQL_TEST 'I'
 
 /* 과제4: 직군별 년월별 입사 건수 동적쿼리 작성 */
 -- [[ 프로세스 선행 ]] --
-use SAMPLE
-select * from emp
+use SAMPLE;
+select * from emp;
 
 -- 조건에 충족하는 job, hiredate 출력
-select job, hiredate from emp where hiredate between '1981-01-01' and '1981-06-30'
+select job, hiredate from emp where hiredate between '1981-01-01' and '1981-06-30';
 
 -- datetime 형식 변환(yyyyMM)
-select convert(nvarchar(6), hiredate, 112) as 'hire_month' from emp where hiredate between '1981-01-01' and '1981-06-30'
+select convert(nvarchar(6), hiredate, 112) as 'hire_month' from emp where hiredate between '1981-01-01' and '1981-06-30';
 
 -- pivot 연습 진행
 select * from
 	(select job, convert(nvarchar(6),hiredate,112) as 'hire_month'
 	from emp
 	where hiredate between '1981-01-01' and '1981-06-30') as X
-	pivot (count(hire_month) for hire_month in ([198101], [198102], [198103], [198104], [198105], [198106])) as pvt
+	pivot (count(hire_month) for hire_month in ([198101], [198102], [198103], [198104], [198105], [198106])) as pvt;
 
 ----------------------------------------------------------------------------------------------------------
 -- [[ 동작 확인 ]]
@@ -131,4 +131,4 @@ set @PIVOT = 'pivot(count(hire_month) for hire_month in (' + @SQL + ')) as pvt'	
 set @QUERY = 'select * from ' + @SUBQUERY + ' as X ' + @PIVOT						-- 최종 select 문 통합
 
 -- 동적쿼리 실행
-exec SP_EXECUTESQL @QUERY
+exec SP_EXECUTESQL @QUERY;
